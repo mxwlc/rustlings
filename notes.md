@@ -666,7 +666,7 @@ fn build_scores_table(results: String) -> HashMap<String, Team> {
     scores
 }
 ```
-## `quiz2.rs` - Stirng Transformations
+## `quiz2.rs` - String Transformations
 ```rust
 pub fn transformer(input: Vec<(String, Command)>) -> Vec<String> {
     let mut output: Vec<String> = vec![];
@@ -846,3 +846,53 @@ impl AppendBar for String {
 }
 ```
 Here the trait `AppendBar` can be implemented for different data DataTypes in this case it implements the `append_bar` method for the `String` datatype.
+### `traits2.rs`
+For templates (in this case `Vec<String>`) to implement a trait you need to also specify the data type (in this case `String`) after the for key word in the declaration, as seem below.
+```rust
+impl AppendBar for Vec<String> {
+    fn append_bar(mut self) -> Self {
+        self.push(String::from("Bar"));
+        return self;
+    }
+}
+```
+### `traits3.rs`
+In order to define a default implementation we declare the function in the original `trait` block and specify an empty `impl` block. The structs that the method is implemented for all structs without having to redefine them.
+```rust
+pub trait Licensed {
+    fn licensing_info(&self) -> String {String::from("Some information")}
+}
+impl Licensed for SomeSoftware {}
+impl Licensed for OtherSoftware {}
+```
+When the `licensing_info` method is called the default function defined in the `trait` block ia called.
+### `traits4.rs`
+In order to implement a function for that accepts multiple traits you have to specify it by adding `<arguement>: impl <trait>` as shown below. 
+```rust
+fn compare_license_types(software: impl Licensed, software_two: impl Licensed) -> bool {
+    software.licensing_info() == software_two.licensing_info()
+}
+```
+The listing above implement s the function, so it can take `SomeSoftware` and/or `OtherSoftware`.
+### `traits5.rs`
+In order to implement a function for multiple traits we just use `<trait1> + <trait2>` when specifying the type in the function declaration.
+```rust
+fn some_func(item: impl SomeTrait + OtherTrait) -> bool {
+    item.some_function() && item.other_function()
+}
+```
+## Quiz 3 `quiz3.rs` - Traits and Generics
+```rust
+pub struct ReportCard<T> {
+    pub grade: T,
+    pub student_name: String,
+    pub student_age: u8,
+}
+impl<T: Display> ReportCard<T> {
+    pub fn print(&self) -> String {
+        format!("{} ({}) - achieved a grade of {}",
+                &self.student_name, &self.student_age, &self.grade)
+    }
+}
+```
+In order to solve this problem I added `<T>` to the `ReportCard` in order to support both a numerical (`float`) or a string grade. In order to implement a the funtion `print` for a generic Report card by implementing the `Display` module which allows for the formatting of generic variables (NB: Without implementing this trait it wouldnt be possible to format generic types (`grade : <T>`) into strings) . 
